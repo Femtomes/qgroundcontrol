@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
  *
  * (c) 2009-2020 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
  *
@@ -33,7 +33,8 @@ public:
     enum class GPSType {
         u_blox,
         trimble,
-        septentrio
+        septentrio,
+        femtomes
     };
 
     GPSProvider(const QString& device,

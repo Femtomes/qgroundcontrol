@@ -1,4 +1,4 @@
-{
+﻿{
     "version":      1,
     "fileType":  "FactMetaData",
     "QGC.MetaData.Facts":
@@ -37,6 +37,13 @@
     "longDesc":  "If this option is enabled GroundControl will automatically connect to an RTK GPS which is connected via USB.",
     "type":             "bool",
     "default":     true
+},
+{
+    "name":             "autoConnectFemtoRTKGPS",
+    "shortDesc": "Automatically connect to an Femtomes RTK GPS",
+    "longDesc":  "If this option is enabled GroundControl will automatically connect to an Femtomes RTK GPS which is connected via USB.",
+    "type":             "bool",
+    "default":     false
 },
 {
     "name":             "autoConnectLibrePilot",

@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
  *
  * (c) 2009-2020 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
  *
@@ -573,6 +573,15 @@ void LinkManager::_updateAutoConnectLinks(void)
                         SharedLinkConfigurationPtr  sharedConfig(pSerialConfig);
                         createConnectedLink(sharedConfig, boardType == QGCSerialPortInfo::BoardTypePX4Flow);
                     }
+                }
+            }
+            else
+            {
+                if(_autoConnectSettings->autoConnectFemtoRTKGPS()->rawValue().toBool() && !_toolbox->gpsManager()->connected())
+                {   /**< only for femto rtk gps usb devicer */
+                    qCDebug(LinkManagerLog) << " Femto RTK GPS auto-connected" << portInfo.portName().trimmed();
+                    _autoConnectRTKPort = portInfo.systemLocation();
+                   _toolbox->gpsManager()->connectGPS(portInfo.systemLocation(), "Femtomes RTK GPS");
                 }
             }
     }

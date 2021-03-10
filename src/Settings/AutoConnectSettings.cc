@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
  *
  * (c) 2009-2020 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
  *
@@ -66,6 +66,17 @@ DECLARE_SETTINGSFACT_NO_FUNC(AutoConnectSettings, autoConnectRTKGPS)
 #endif
     }
     return _autoConnectRTKGPSFact;
+}
+
+DECLARE_SETTINGSFACT_NO_FUNC(AutoConnectSettings, autoConnectFemtoRTKGPS)
+{
+    if (!_autoConnectFemtoRTKGPSFact) {
+        _autoConnectFemtoRTKGPSFact = _createSettingsFact(autoConnectFemtoRTKGPSName);
+#ifdef __ios__
+        _autoConnectFemtoRTKGPSFact->setVisible(false);
+#endif
+    }
+    return _autoConnectFemtoRTKGPSFact;
 }
 
 DECLARE_SETTINGSFACT_NO_FUNC(AutoConnectSettings, autoConnectLibrePilot)

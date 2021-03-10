@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
  *
  * (c) 2009-2020 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
  *
@@ -21,6 +21,7 @@
 #include "Drivers/src/sbf.h"
 #include "Drivers/src/ashtech.h"
 #include "Drivers/src/base_station.h"
+#include "Drivers/src/femtomes.h"
 #include "definitions.h"
 
 //#define SIMULATE_RTCM_OUTPUT //if defined, generate simulated RTCM messages
@@ -85,6 +86,9 @@ void GPSProvider::run()
         } else if (_type == GPSType::septentrio) {
             gpsDriver = new GPSDriverSBF(&callbackEntry, this, &_reportGpsPos, _pReportSatInfo, 5);
             baudrate = 0; // auto-configure
+        } else if (_type == GPSType::femtomes) {
+            gpsDriver = new GPSDriverFemto(&callbackEntry, this, &_reportGpsPos,_pReportSatInfo);
+            baudrate = 115200; // auto-configure
         } else {
             gpsDriver = new GPSDriverUBX(GPSDriverUBX::Interface::UART, &callbackEntry, this, &_reportGpsPos, _pReportSatInfo);
             baudrate = 0; // auto-configure

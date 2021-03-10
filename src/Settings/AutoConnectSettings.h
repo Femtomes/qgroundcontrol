@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
  *
  * (c) 2009-2020 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
  *
@@ -30,6 +30,7 @@ public:
     DEFINE_SETTINGFACT(autoConnectSiKRadio)
     DEFINE_SETTINGFACT(autoConnectPX4Flow)
     DEFINE_SETTINGFACT(autoConnectRTKGPS)
+    DEFINE_SETTINGFACT(autoConnectFemtoRTKGPS)
     DEFINE_SETTINGFACT(autoConnectLibrePilot)
     DEFINE_SETTINGFACT(autoConnectNmeaPort)
     DEFINE_SETTINGFACT(autoConnectNmeaBaud)

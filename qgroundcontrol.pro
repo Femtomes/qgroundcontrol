@@ -768,6 +768,7 @@ HEADERS += \
     src/GPS/Drivers/src/ashtech.h \
     src/GPS/Drivers/src/ubx.h \
     src/GPS/Drivers/src/sbf.h \
+    src/GPS/Drivers/src/femtomes.h \
     src/GPS/GPSManager.h \
     src/GPS/GPSPositionMessage.h \
     src/GPS/GPSProvider.h \
@@ -985,6 +986,7 @@ SOURCES += \
     src/GPS/Drivers/src/ashtech.cpp \
     src/GPS/Drivers/src/ubx.cpp \
     src/GPS/Drivers/src/sbf.cpp \
+    src/GPS/Drivers/src/femtomes.cpp \
     src/GPS/GPSManager.cc \
     src/GPS/GPSProvider.cc \
     src/GPS/RTCM/RTCMMavlink.cc \
