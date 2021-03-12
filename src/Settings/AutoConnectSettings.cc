@@ -68,17 +68,6 @@ DECLARE_SETTINGSFACT_NO_FUNC(AutoConnectSettings, autoConnectRTKGPS)
     return _autoConnectRTKGPSFact;
 }
 
-DECLARE_SETTINGSFACT_NO_FUNC(AutoConnectSettings, autoConnectFemtoRTKGPS)
-{
-    if (!_autoConnectFemtoRTKGPSFact) {
-        _autoConnectFemtoRTKGPSFact = _createSettingsFact(autoConnectFemtoRTKGPSName);
-#ifdef __ios__
-        _autoConnectFemtoRTKGPSFact->setVisible(false);
-#endif
-    }
-    return _autoConnectFemtoRTKGPSFact;
-}
-
 DECLARE_SETTINGSFACT_NO_FUNC(AutoConnectSettings, autoConnectLibrePilot)
 {
     if (!_autoConnectLibrePilotFact) {
@@ -110,4 +99,37 @@ DECLARE_SETTINGSFACT_NO_FUNC(AutoConnectSettings, autoConnectNmeaBaud)
 #endif
     }
     return _autoConnectNmeaBaudFact;
+}
+
+DECLARE_SETTINGSFACT_NO_FUNC(AutoConnectSettings, useCustomRTKGPSDevice)
+{
+    if (!_useCustomRTKGPSDeviceFact) {
+        _useCustomRTKGPSDeviceFact = _createSettingsFact(useCustomRTKGPSDeviceName);
+#ifdef __ios__
+        _autoConnectFemtoRTKGPSFact->setVisible(false);
+#endif
+    }
+    return _useCustomRTKGPSDeviceFact;
+}
+
+DECLARE_SETTINGSFACT_NO_FUNC(AutoConnectSettings, customRTKGPSDevicePort)
+{
+    if (!_customRTKGPSDevicePortFact) {
+        _customRTKGPSDevicePortFact = _createSettingsFact(customRTKGPSDevicePortName);
+#ifdef __ios__
+        _autoConnectFemtoRTKGPSFact->setVisible(false);
+#endif
+    }
+    return _customRTKGPSDevicePortFact;
+}
+
+DECLARE_SETTINGSFACT_NO_FUNC(AutoConnectSettings, customRTKGPSDeviceType)
+{
+    if (!_customRTKGPSDeviceTypeFact) {
+        _customRTKGPSDeviceTypeFact = _createSettingsFact(customRTKGPSDeviceTypeName);
+#ifdef __ios__
+        _autoConnectFemtoRTKGPSFact->setVisible(false);
+#endif
+    }
+    return _customRTKGPSDeviceTypeFact;
 }

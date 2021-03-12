@@ -39,13 +39,6 @@
     "default":     true
 },
 {
-    "name":             "autoConnectFemtoRTKGPS",
-    "shortDesc": "Automatically connect to an Femtomes RTK GPS",
-    "longDesc":  "If this option is enabled GroundControl will automatically connect to an Femtomes RTK GPS which is connected via USB.",
-    "type":             "bool",
-    "default":     false
-},
-{
     "name":             "autoConnectLibrePilot",
     "shortDesc": "Automatically connect to a LibrePilot",
     "longDesc":  "If this option is enabled GroundControl will automatically connect to a LibrePilot board which is connected via USB.",
@@ -65,6 +58,27 @@
     "longDesc":  "NMEA GPS Baudrate",
     "type":             "uint32",
     "default":     4800
+},
+{
+    "name":             "useCustomRTKGPSDevice",
+    "shortDesc": "Use custom RTK GPS device port and type",
+    "longDesc":  "If this option is enabled GroundControl will automatically connect to an RTK GPS Use custom RTK GPS device port and type.",
+    "type":             "bool",
+    "default":     false
+},
+{
+    "name":             "customRTKGPSDevicePort",
+    "shortDesc": "Customize RTK GPS Device Port",
+    "longDesc":  "If this port is set GroundControl will automatically connect to the port which is connected via USB as RTK GPS device .",
+    "type":             "string",
+    "default":     ""
+},
+{
+    "name":             "customRTKGPSDeviceType",
+    "shortDesc": "Customize RTK GPS Device Type",
+    "longDesc":  "org Type of Customize RTK GPS Device Port.",
+    "type":             "string",
+    "default":     ""
 },
 {
     "name":             "udpListenPort",
