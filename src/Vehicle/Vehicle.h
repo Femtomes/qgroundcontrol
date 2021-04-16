@@ -242,6 +242,8 @@ public:
     Q_PROPERTY(QObject*             sysStatusSensorInfo         READ sysStatusSensorInfo                                            CONSTANT)
     Q_PROPERTY(bool                 allSensorsHealthy           READ allSensorsHealthy                                              NOTIFY allSensorsHealthyChanged)    //< true: all sensors in SYS_STATUS reported as healthy
     Q_PROPERTY(bool                 requiresGpsFix              READ requiresGpsFix                                                 NOTIFY requiresGpsFixChanged)
+    Q_PROPERTY(double               loadProgress                READ loadProgress                                                   NOTIFY loadProgressChanged)
+    Q_PROPERTY(bool                 initialConnectComplete      READ _initialConnectComplete                                        NOTIFY initialConnectComplete)
 
     // The following properties relate to Orbit status
     Q_PROPERTY(bool             orbitActive     READ orbitActive        NOTIFY orbitActiveChanged)
@@ -433,14 +435,15 @@ public:
 
     void updateFlightDistance(double distance);
 
-    bool joystickEnabled            ();
+    bool joystickEnabled            () const;
     void setJoystickEnabled         (bool enabled);
     void sendJoystickDataThreadSafe (float roll, float pitch, float yaw, float thrust, quint16 buttons);
 
     // Property accesors
-    int id() { return _id; }
+    int id() const{ return _id; }
     MAV_AUTOPILOT firmwareType() const { return _firmwareType; }
     MAV_TYPE vehicleType() const { return _vehicleType; }
+    QGCMAVLink::VehicleClass_t vehicleClass(void) const { return QGCMAVLink::vehicleClass(_vehicleType); }
     Q_INVOKABLE QString vehicleTypeName() const;
 
     /// Sends a message to the specified link
@@ -463,7 +466,7 @@ public:
 
     QGeoCoordinate homePosition();
 
-    bool armed              () { return _armed; }
+    bool armed              () const{ return _armed; }
     void setArmed           (bool armed, bool showError);
     void setArmedShowError  (bool armed) { setArmed(armed, true); }
 
@@ -494,7 +497,7 @@ public:
 
     QmlObjectListModel* cameraTriggerPoints () { return &_cameraTriggerPoints; }
 
-    int  flowImageIndex() { return _flowImageIndex; }
+    int  flowImageIndex() const{ return _flowImageIndex; }
 
     //-- Mavlink Logging
     void startMavlinkLog();
@@ -521,20 +524,20 @@ public:
     bool            messageTypeNormal           () { return _currentMessageType == MessageNormal; }
     bool            messageTypeWarning          () { return _currentMessageType == MessageWarning; }
     bool            messageTypeError            () { return _currentMessageType == MessageError; }
-    int             newMessageCount             () { return _currentMessageCount; }
-    int             messageCount                () { return _messageCount; }
+    int             newMessageCount             () const{ return _currentMessageCount; }
+    int             messageCount                () const{ return _messageCount; }
     QString         formattedMessages           ();
     QString         latestError                 () { return _latestError; }
     float           latitude                    () { return static_cast<float>(_coordinate.latitude()); }
     float           longitude                   () { return static_cast<float>(_coordinate.longitude()); }
     bool            mavPresent                  () { return _mav != nullptr; }
-    int             rcRSSI                      () { return _rcRSSI; }
+    int             rcRSSI                      () const{ return _rcRSSI; }
     bool            px4Firmware                 () const { return _firmwareType == MAV_AUTOPILOT_PX4; }
     bool            apmFirmware                 () const { return _firmwareType == MAV_AUTOPILOT_ARDUPILOTMEGA; }
     bool            genericFirmware             () const { return !px4Firmware() && !apmFirmware(); }
-    uint            messagesReceived            () { return _messagesReceived; }
-    uint            messagesSent                () { return _messagesSent; }
-    uint            messagesLost                () { return _messagesLost; }
+    uint            messagesReceived            () const{ return _messagesReceived; }
+    uint            messagesSent                () const{ return _messagesSent; }
+    uint            messagesLost                () const{ return _messagesLost; }
     bool            flying                      () const { return _flying; }
     bool            landing                     () const { return _landing; }
     bool            guidedMode                  () const;
@@ -560,19 +563,19 @@ public:
     double          defaultHoverSpeed           () const { return _defaultHoverSpeed; }
     QString         firmwareTypeString          () const;
     QString         vehicleTypeString           () const;
-    int             telemetryRRSSI              () { return _telemetryRRSSI; }
-    int             telemetryLRSSI              () { return _telemetryLRSSI; }
-    unsigned int    telemetryRXErrors           () { return _telemetryRXErrors; }
-    unsigned int    telemetryFixed              () { return _telemetryFixed; }
-    unsigned int    telemetryTXBuffer           () { return _telemetryTXBuffer; }
-    int             telemetryLNoise             () { return _telemetryLNoise; }
-    int             telemetryRNoise             () { return _telemetryRNoise; }
+    int             telemetryRRSSI              () const{ return _telemetryRRSSI; }
+    int             telemetryLRSSI              () const{ return _telemetryLRSSI; }
+    unsigned int    telemetryRXErrors           () const{ return _telemetryRXErrors; }
+    unsigned int    telemetryFixed              () const{ return _telemetryFixed; }
+    unsigned int    telemetryTXBuffer           () const{ return _telemetryTXBuffer; }
+    int             telemetryLNoise             () const{ return _telemetryLNoise; }
+    int             telemetryRNoise             () const{ return _telemetryRNoise; }
     bool            autoDisarm                  ();
     bool            orbitActive                 () const { return _orbitActive; }
     QGCMapCircle*   orbitMapCircle              () { return &_orbitMapCircle; }
-    bool            readyToFlyAvailable         () { return _readyToFlyAvailable; }
-    bool            readyToFly                  () { return _readyToFly; }
-    bool            allSensorsHealthy           () { return _allSensorsHealthy; }
+    bool            readyToFlyAvailable         () const{ return _readyToFlyAvailable; }
+    bool            readyToFly                  () const{ return _readyToFly; }
+    bool            allSensorsHealthy           () const{ return _allSensorsHealthy; }
     QObject*        sysStatusSensorInfo         () { return &_sysStatusSensorInfo; }
     bool            requiresGpsFix              () const { return static_cast<bool>(_onboardControlSensorsPresent & SysStatusSensorGPS); }
 
@@ -719,7 +722,7 @@ public:
     bool soloFirmware() const { return _soloFirmware; }
     void setSoloFirmware(bool soloFirmware);
 
-    int defaultComponentId() { return _defaultComponentId; }
+    int defaultComponentId() const{ return _defaultComponentId; }
 
     /// Sets the default component id for an offline editing vehicle
     void setOfflineEditingDefaultComponentId(int defaultComponentId);
@@ -769,19 +772,21 @@ public:
     /// Vehicle is about to be deleted
     void prepareDelete();
 
-    quint64     mavlinkSentCount        () { return _mavlinkSentCount; }        /// Calculated total number of messages sent to us
-    quint64     mavlinkReceivedCount    () { return _mavlinkReceivedCount; }    /// Total number of sucessful messages received
-    quint64     mavlinkLossCount        () { return _mavlinkLossCount; }        /// Total number of lost messages
-    float       mavlinkLossPercent      () { return _mavlinkLossPercent; }      /// Running loss rate
+    quint64     mavlinkSentCount        () const{ return _mavlinkSentCount; }        /// Calculated total number of messages sent to us
+    quint64     mavlinkReceivedCount    () const{ return _mavlinkReceivedCount; }    /// Total number of sucessful messages received
+    quint64     mavlinkLossCount        () const{ return _mavlinkLossCount; }        /// Total number of lost messages
+    float       mavlinkLossPercent      () const{ return _mavlinkLossPercent; }      /// Running loss rate
 
-    qreal       gimbalRoll              () { return static_cast<qreal>(_curGimbalRoll);}
-    qreal       gimbalPitch             () { return static_cast<qreal>(_curGimbalPitch); }
-    qreal       gimbalYaw               () { return static_cast<qreal>(_curGinmbalYaw); }
-    bool        gimbalData              () { return _haveGimbalData; }
-    bool        isROIEnabled            () { return _isROIEnabled; }
+    qreal       gimbalRoll              () const{ return static_cast<qreal>(_curGimbalRoll);}
+    qreal       gimbalPitch             () const{ return static_cast<qreal>(_curGimbalPitch); }
+    qreal       gimbalYaw               () const{ return static_cast<qreal>(_curGimbalYaw); }
+    bool        gimbalData              () const{ return _haveGimbalData; }
+    bool        isROIEnabled            () const{ return _isROIEnabled; }
 
     CheckList   checkListState          () { return _checkListState; }
     void        setCheckListState       (CheckList cl)  { _checkListState = cl; emit checkListStateChanged(); }
+
+    double loadProgress                 () const { return _loadProgress; }
 
 public slots:
     void setVtolInFwdFlight                 (bool vtolInFwdFlight);
@@ -851,6 +856,7 @@ signals:
     void firmwareCustomVersionChanged   ();
     void gitHashChanged                 (QString hash);
     void vehicleUIDChanged              ();
+    void loadProgressChanged            (float value);
 
     /// New RC channel values coming from RC_CHANNELS message
     ///     @param channelCount Number of available channels, cMaxRcChannels max
@@ -919,6 +925,7 @@ private slots:
     void _trafficUpdate                     (bool alert, QString traffic_id, QString vehicle_id, QGeoCoordinate location, float heading);
     void _orbitTelemetryTimeout             ();
     void _updateFlightTime                  ();
+    void _gotProgressUpdate                 (float progressValue);
 
 private:
     void _joystickChanged               (Joystick* joystick);
@@ -974,6 +981,7 @@ private:
     void _chunkedStatusTextTimeout      (void);
     void _chunkedStatusTextCompleted    (uint8_t compId);
     void _setMessageInterval            (int messageId, int rate);
+    bool _initialConnectComplete        () const;
 
     static void _rebootCommandResultHandler(void* resultHandlerData, int compId, MAV_RESULT commandResult, MavCmdResultFailureCode_t failureCode);
 
@@ -1103,7 +1111,7 @@ private:
 
     float               _curGimbalRoll  = 0.0f;
     float               _curGimbalPitch = 0.0f;
-    float               _curGinmbalYaw  = 0.0f;
+    float               _curGimbalYaw  = 0.0f;
     bool                _haveGimbalData = false;
     bool                _isROIEnabled   = false;
     Joystick*           _activeJoystick = nullptr;
@@ -1124,6 +1132,8 @@ private:
     uint64_t    _mavlinkReceivedCount   = 0;
     uint64_t    _mavlinkLossCount       = 0;
     float       _mavlinkLossPercent     = 0.0f;
+
+    float       _loadProgress           = 0.0f;
 
     QMap<QString, QTime> _noisySpokenPrearmMap; ///< Used to prevent PreArm messages from being spoken too often
 

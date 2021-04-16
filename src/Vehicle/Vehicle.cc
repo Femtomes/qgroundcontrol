@@ -376,6 +376,10 @@ void Vehicle::_commonInit()
     _parameterManager = new ParameterManager(this);
     connect(_parameterManager, &ParameterManager::parametersReadyChanged, this, &Vehicle::_parametersReady);
 
+    connect(_initialConnectStateMachine, &InitialConnectStateMachine::progressUpdate,
+            this, &Vehicle::_gotProgressUpdate);
+    connect(_parameterManager, &ParameterManager::loadProgressChanged, this, &Vehicle::_gotProgressUpdate);
+
     _objectAvoidance = new VehicleObjectAvoidance(this, this);
 
     // GeoFenceManager needs to access ParameterManager so make sure to create after
@@ -1869,7 +1873,7 @@ void Vehicle::_saveSettings()
     }
 }
 
-bool Vehicle::joystickEnabled()
+bool Vehicle::joystickEnabled() const
 {
     return _joystickEnabled;
 }
@@ -2084,6 +2088,18 @@ void Vehicle::_flightTimerStop()
 void Vehicle::_updateFlightTime()
 {
     _flightTimeFact.setRawValue((double)_flightTimer.elapsed() / 1000.0);
+}
+
+void Vehicle::_gotProgressUpdate(float progressValue)
+{
+    if (sender() != _initialConnectStateMachine && _initialConnectStateMachine->active()) {
+        return;
+    }
+    if (sender() == _initialConnectStateMachine && !_initialConnectStateMachine->active()) {
+        progressValue = 0.f;
+    }
+    _loadProgress = progressValue;
+    emit loadProgressChanged(progressValue);
 }
 
 void Vehicle::_firstMissionLoadComplete()
@@ -3520,22 +3536,7 @@ void Vehicle::sendPlan(QString planFile)
 
 QString Vehicle::hobbsMeter()
 {
-    static const char* HOOBS_HI = "LND_FLIGHT_T_HI";
-    static const char* HOOBS_LO = "LND_FLIGHT_T_LO";
-    //-- TODO: Does this exist on non PX4?
-    if (_parameterManager->parameterExists(FactSystem::defaultComponentId, HOOBS_HI) &&
-            _parameterManager->parameterExists(FactSystem::defaultComponentId, HOOBS_LO)) {
-        Fact* factHi = _parameterManager->getParameter(FactSystem::defaultComponentId, HOOBS_HI);
-        Fact* factLo = _parameterManager->getParameter(FactSystem::defaultComponentId, HOOBS_LO);
-        uint64_t hobbsTimeSeconds = ((uint64_t)factHi->rawValue().toUInt() << 32 | (uint64_t)factLo->rawValue().toUInt()) / 1000000;
-        int hours   = hobbsTimeSeconds / 3600;
-        int minutes = (hobbsTimeSeconds % 3600) / 60;
-        int seconds = hobbsTimeSeconds % 60;
-        QString timeStr = QString::asprintf("%04d:%02d:%02d", hours, minutes, seconds);
-        qCDebug(VehicleLog) << "Hobbs Meter:" << timeStr << "(" << factHi->rawValue().toUInt() << factLo->rawValue().toUInt() << ")";
-        return timeStr;
-    }
-    return QString("0000:00:00");
+    return _firmwarePlugin->getHobbsMeter(this);
 }
 
 void Vehicle::_vehicleParamLoaded(bool ready)
@@ -3620,6 +3621,11 @@ void Vehicle::_setMessageInterval(int messageId, int rate)
             true,                        // show error
             messageId,
             rate);
+}
+
+bool Vehicle::_initialConnectComplete() const
+{
+    return !_initialConnectStateMachine->active();
 }
 
 void Vehicle::_initializeCsv()
@@ -3713,15 +3719,15 @@ void Vehicle::gimbalPitchStep(int direction)
     if(_haveGimbalData) {
         //qDebug() << "Pitch:" << _curGimbalPitch << direction << (_curGimbalPitch + direction);
         double p = static_cast<double>(_curGimbalPitch + direction);
-        gimbalControlValue(p, static_cast<double>(_curGinmbalYaw));
+        gimbalControlValue(p, static_cast<double>(_curGimbalYaw));
     }
 }
 
 void Vehicle::gimbalYawStep(int direction)
 {
     if(_haveGimbalData) {
-        //qDebug() << "Yaw:" << _curGinmbalYaw << direction << (_curGinmbalYaw + direction);
-        double y = static_cast<double>(_curGinmbalYaw + direction);
+        //qDebug() << "Yaw:" << _curGimbalYaw << direction << (_curGimbalYaw + direction);
+        double y = static_cast<double>(_curGimbalYaw + direction);
         gimbalControlValue(static_cast<double>(_curGimbalPitch), y);
     }
 }
@@ -3745,8 +3751,8 @@ void Vehicle::_handleGimbalOrientation(const mavlink_message_t& message)
         _curGimbalPitch = o.pitch;
         emit gimbalPitchChanged();
     }
-    if(fabsf(_curGinmbalYaw - o.yaw) > 0.5f) {
-        _curGinmbalYaw = o.yaw;
+    if(fabsf(_curGimbalYaw - o.yaw) > 0.5f) {
+        _curGimbalYaw = o.yaw;
         emit gimbalYawChanged();
     }
     if(!_haveGimbalData) {
