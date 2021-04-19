@@ -364,6 +364,22 @@ bool LinkManager::_portAlreadyConnected(const QString& portName)
     }
     return false;
 }
+
+SharedLinkInterfacePtr LinkManager::_getConnectedSerialLink(const QString &portName)
+{
+    QString searchPort = portName.trimmed();
+
+    for (int i=0; i<_rgLinks.count(); i++) {
+        SharedLinkConfigurationPtr linkConfig = _rgLinks[i]->linkConfiguration();
+        SerialConfiguration* serialConfig = qobject_cast<SerialConfiguration*>(linkConfig.get());
+        if (serialConfig) {
+            if (serialConfig->portName() == searchPort) {
+                return _rgLinks[i];
+            }
+        }
+    }
+    return SharedLinkInterfacePtr(nullptr);
+}
 #endif
 
 void LinkManager::_addUDPAutoConnectLink(void)
@@ -451,6 +467,36 @@ void LinkManager::_updateAutoConnectLinks(void)
     }
 #endif
 #endif
+
+
+#ifndef __mobile__
+#ifndef NO_SERIAL_LINK
+    if(_autoConnectSettings->autoConnectRTKGPS()->rawValue().toBool()
+            &&_autoConnectSettings->useCustomRTKGPSDevice()->rawValue().toBool()
+            && !_toolbox->gpsManager()->connected())
+    {
+        for(const QSerialPortInfo &portInfo : QSerialPortInfo::availablePorts())
+        {
+            QString customRTKGPSDevicePort = _autoConnectSettings->customRTKGPSDevicePort()->cookedValueString();
+            QString customRTKGPSDeviceType = _autoConnectSettings->customRTKGPSDeviceType()->cookedValueString();
+            if(portInfo.systemLocation().trimmed() == customRTKGPSDevicePort.trimmed()
+                    && !customRTKGPSDeviceType.isEmpty())
+            {
+                SharedLinkInterfacePtr serialLinkPtr = _getConnectedSerialLink(portInfo.systemLocation());
+                if(serialLinkPtr)
+                {
+                    serialLinkPtr->disconnect();    /**< if serial port has connected as link, disconnect it */
+                }
+
+                qCDebug(LinkManagerLog) << " Femto RTK GPS auto-connected" << portInfo.portName().trimmed();
+                _autoConnectRTKPort = portInfo.systemLocation();
+               _toolbox->gpsManager()->connectGPS(portInfo.systemLocation(), customRTKGPSDeviceType);
+            }
+        }
+    }
+#endif
+#endif
+
 
 #ifndef NO_SERIAL_LINK
     QStringList                 currentPorts;

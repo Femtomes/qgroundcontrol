@@ -100,3 +100,36 @@ DECLARE_SETTINGSFACT_NO_FUNC(AutoConnectSettings, autoConnectNmeaBaud)
     }
     return _autoConnectNmeaBaudFact;
 }
+
+DECLARE_SETTINGSFACT_NO_FUNC(AutoConnectSettings, useCustomRTKGPSDevice)
+{
+    if (!_useCustomRTKGPSDeviceFact) {
+        _useCustomRTKGPSDeviceFact = _createSettingsFact(useCustomRTKGPSDeviceName);
+#ifdef __ios__
+        _autoConnectFemtoRTKGPSFact->setVisible(false);
+#endif
+    }
+    return _useCustomRTKGPSDeviceFact;
+}
+
+DECLARE_SETTINGSFACT_NO_FUNC(AutoConnectSettings, customRTKGPSDevicePort)
+{
+    if (!_customRTKGPSDevicePortFact) {
+        _customRTKGPSDevicePortFact = _createSettingsFact(customRTKGPSDevicePortName);
+#ifdef __ios__
+        _autoConnectFemtoRTKGPSFact->setVisible(false);
+#endif
+    }
+    return _customRTKGPSDevicePortFact;
+}
+
+DECLARE_SETTINGSFACT_NO_FUNC(AutoConnectSettings, customRTKGPSDeviceType)
+{
+    if (!_customRTKGPSDeviceTypeFact) {
+        _customRTKGPSDeviceTypeFact = _createSettingsFact(customRTKGPSDeviceTypeName);
+#ifdef __ios__
+        _autoConnectFemtoRTKGPSFact->setVisible(false);
+#endif
+    }
+    return _customRTKGPSDeviceTypeFact;
+}

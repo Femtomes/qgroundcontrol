@@ -837,6 +837,82 @@ Rectangle {
                                     fact:                   QGroundControl.settingsManager.autoConnectSettings.nmeaUdpPort
                                 }
                             }
+
+                            GroupBox {
+                                Layout.fillWidth:   false
+                                Layout.alignment: Qt.AlignCenter
+                                visible:    !ScreenTools.isMobile && QGroundControl.settingsManager.autoConnectSettings.autoConnectRTKGPS.value === true
+                                ColumnLayout {
+                                    spacing: _margins
+
+                                    FactCheckBox{
+                                        id: useCustomRTKGPSDeviceCheckBox
+                                        text:       qsTr("Use Custom RTK GPS Device")
+                                        property Fact _settingFact: QGroundControl.settingsManager.autoConnectSettings.useCustomRTKGPSDevice
+
+                                        Component.onCompleted: {
+                                            useCustomRTKGPSDeviceCheckBox.fact.value = useCustomRTKGPSDeviceCheckBox._settingFact.value;
+                                        }
+                                    }
+                                    Item { height: 1 }
+                                    GridLayout {
+                                        Layout.alignment: Qt.AlignCenter
+                                        columns: 2
+                                        enabled: useCustomRTKGPSDeviceCheckBox.checked
+
+                                        QGCLabel {
+                                            text: qsTr("RTK GPS Device Port")
+                                        }
+                                        QGCComboBox {
+                                            id:                     customRTKGPSDevicePortCombo
+                                            Layout.preferredWidth:  _comboFieldWidth
+
+                                            model:  ListModel {
+                                            }
+                                            property Fact _settingFact: QGroundControl.settingsManager.autoConnectSettings.customRTKGPSDevicePort
+
+                                            Component.onCompleted: {
+                                                for (var i in QGroundControl.linkManager.serialPorts) {
+                                                    customRTKGPSDevicePortCombo.model.append({text:QGroundControl.linkManager.serialPorts[i]})
+                                                }
+                                                var index = customRTKGPSDevicePortCombo.find(customRTKGPSDevicePortCombo._settingFact.valueString);
+                                                customRTKGPSDevicePortCombo.currentIndex = index;
+                                                if (QGroundControl.linkManager.serialPorts.length === 0) {
+                                                    customRTKGPSDevicePortCombo.model.append({text: "Serial <none available>"})
+                                                }
+                                            }
+                                        }
+                                        QGCLabel {
+                                            text:       qsTr("RTK GPS Device Type")
+                                        }
+                                        QGCComboBox {
+                                            id:                     customRTKGPSDeviceTypeCombo
+                                            Layout.preferredWidth:  _comboFieldWidth
+                                            model:                  ["Femtomes RTK GPS Device",]
+                                            property Fact _settingFact: QGroundControl.settingsManager.autoConnectSettings.customRTKGPSDeviceType
+
+                                            Component.onCompleted: {
+                                                var index = customRTKGPSDeviceTypeCombo.find(customRTKGPSDeviceTypeCombo._settingFact.valueString);
+                                                customRTKGPSDeviceTypeCombo.currentIndex = index;
+                                            }
+                                        }
+                                    }
+                                    QGCButton {
+                                        text:   qsTr("Save Config")
+                                        Layout.alignment: Qt.AlignCenter
+                                        onClicked: {
+                                            useCustomRTKGPSDeviceCheckBox._settingFact.value = useCustomRTKGPSDeviceCheckBox.fact.value
+                                            if(customRTKGPSDevicePortCombo.index !== -1){
+                                                customRTKGPSDevicePortCombo._settingFact.value = customRTKGPSDevicePortCombo.currentText;
+                                            }
+                                            if(customRTKGPSDeviceTypeCombo.index !== -1){
+                                                customRTKGPSDeviceTypeCombo._settingFact.value = customRTKGPSDeviceTypeCombo.currentText;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
                         }
                     }
 

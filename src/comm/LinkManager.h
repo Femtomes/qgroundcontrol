@@ -152,6 +152,7 @@ private:
 
 #ifndef NO_SERIAL_LINK
     bool                _portAlreadyConnected       (const QString& portName);
+    SharedLinkInterfacePtr _getConnectedSerialLink  (const QString& portName);
 #endif
 
     bool                                _configUpdateSuspended;                     ///< true: stop updating configuration list
